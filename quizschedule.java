@@ -1,12 +1,6 @@
 // JO 3-Jan-2019
 package quizretakes;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,6 +9,7 @@ import java.time.*;
 import java.lang.Long;
 import java.lang.String;
 
+import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -46,12 +41,12 @@ import java.io.IOException;
  *    retakes.xml -- Data file of when retakes are given
  */
 
-public class quizschedule extends HttpServlet
+public class quizschedule
 {
    // Data files
    // location maps to /webapps/offutt/WEB-INF/data/ from a terminal window.
    // These names show up in all servlets
-   private static final String dataLocation    = "/var/www/CS/webapps/offutt/WEB-INF/data/";
+   private static final String dataLocation    = "/data/";
    static private final String separator = ",";
    private static final String courseBase   = "course";
    private static final String quizzesBase = "quiz-orig";
@@ -70,69 +65,84 @@ public class quizschedule extends HttpServlet
    // Number of days a retake is offered after the quiz is given
    private int daysAvailable = 14;
 
-   // To be set by getRequestURL()
-   private String thisServlet = "";
 
 
 // doGet() : Prints the form to schedule a retake
 @Override
-protected void doGet (HttpServletRequest request, HttpServletResponse response)
-                     throws ServletException, IOException
+protected void initialize() throws IOException
 {
-   response.setContentType ("text/html");
-   PrintWriter out = response.getWriter ();
-   servletUtils.printHeader (out);
+   PrintWriter out = new PrintWriter(System.out);
+   Scanner in = new Scanner(System.in);
+   courseBean course;
+   
+   // Filenames to be built from above and the courseID
+   String quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
+   String retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
+   String apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
+   
+   // Load the quizzes and the retake times from disk
+   quizzes quizList    = new quizzes();
+   retakes retakesList = new retakes();
+   quizReader    qr = new quizReader();
+   retakesReader rr = new retakesReader();
+   boolean filesValid;
+   do {
+       filesValid = true;
+       out.println("Please enter a valid course ID."); //Prompt for CourseID
+       courseID = in.nextLine();
+       courseReader cr = new courseReader();
+       courseFileName = dataLocation + courseBase + "-" + courseID + ".xml";
+       
+       //Try to read in Course xml file.
+       try 
+       {
+          course = cr.read(courseFileName);
+       } 
+       catch (Exception e) {
+          out.println("Can't find course data file for " + courseID + ".");
+          filesValid = false;
+       }
+       
+       //Try to read in Quiz xml file.
+       try 
+       {
+          quizList = qr.read (quizzesFileName);
+       } 
+       catch (Exception e)
+       {
+          out.println("Can't find quiz data file for " + courseID + ".");
+          filesValid = false;
+       }
+       
+       //Try to read in Retake xml file.
+       try 
+       {
+          retakesList = rr.read (retakesFileName);
+       } 
+       catch (Exception e)
+       {
+          out.println("Can't find retakes data file for " + courseID + ".");
+          filesValid = false;
+       }  
+       
+       if(!filesValid)
+       {
+         out.println("Cannot find all necessary data files for CourseID: " + courseID + ".");
+       }
+    } while (!filesValid);
+   
+   daysAvailable = Integer.parseInt(course.getRetakeDuration());
+ 
+ 
+ 
 
-   // Whoami? (Used in form)
-   thisServlet = (request.getRequestURL()).toString();
-   // CS server has a flaw--requires https & 8443, but puts http & 8080 on the requestURL
-   thisServlet = thisServlet.replace("http", "https");
-   thisServlet = thisServlet.replace("8080", "8443");
 
-   // CourseID must be a parameter (also in course XML file, but we need to know which course XML file ...)
-   courseID = request.getParameter("courseID");
-   if (courseID != null && !courseID.isEmpty())
-   {  // If not, ask for one.
-      courseBean course;
-      courseReader cr = new courseReader();
-      courseFileName = dataLocation + courseBase + "-" + courseID + ".xml";
-      try {
-         course = cr.read(courseFileName);
-      } catch (Exception e) {
-         String message = "<p>Can't find the data files for course ID " + courseID + ". You can try again.";
-         servletUtils.printNeedCourseID (out, thisServlet, message);
-         servletUtils.printFooter (out);
-         return;
-      }
-      daysAvailable = Integer.parseInt(course.getRetakeDuration());
 
-      // Filenames to be built from above and the courseID
-      String quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
-      String retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
-      String apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
 
-      // Load the quizzes and the retake times from disk
-      quizzes quizList    = new quizzes();
-      retakes retakesList = new retakes();
-      quizReader    qr = new quizReader();
-      retakesReader rr = new retakesReader();
-
-      try { // Read the files and print the form
-         quizList    = qr.read (quizzesFileName);
-         retakesList = rr.read (retakesFileName);
-         printQuizScheduleForm (out, quizList, retakesList, course);
-      } catch (Exception e)
-      {
-         String message = "<p>Can't find the data files for course ID " + courseID + ". You can try again.";
-         servletUtils.printNeedCourseID (out, thisServlet, message);
-      }
-   }
-   else
-   {
-      servletUtils.printNeedCourseID (out, thisServlet, "");
-   }
-   servletUtils.printFooter (out);
 }
+
+
+
 
 // doPost saves an appointment in a file and prints an acknowledgement
 @Override

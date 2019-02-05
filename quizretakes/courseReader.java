@@ -37,6 +37,7 @@ public courseBean read (String filename)
 //System.out.println("In course Reader, fileName: " +filename);
    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
    DocumentBuilder builder = factory.newDocumentBuilder();
+   builder.setErrorHandler(null);
    Document document = builder.parse (new File (filename));
 
 //System.out.println("In course Reader");

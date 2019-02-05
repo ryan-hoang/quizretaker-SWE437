@@ -107,6 +107,7 @@ protected void go() throws IOException
        catch (Exception e) {
           out.println("Can't find course data file for " + courseID + ".");
           filesValid = false;
+		  continue;
        }
        
        //Try to read in Quiz xml file.

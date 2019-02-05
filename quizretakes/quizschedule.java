@@ -294,7 +294,7 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        out.println("Please enter which quiz you would like to retake.");
        quizID = in.nextInt();
        
-       if(retakeQuizMap.get(retakeID).contains(quizID))
+       if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
        {
          idPair = retakeID + "," + quizID;
          idPairList.add(idPair);

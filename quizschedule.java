@@ -66,9 +66,6 @@ public class quizschedule
    private int daysAvailable = 14;
 
 
-
-// doGet() : Prints the form to schedule a retake
-@Override
 protected void initialize() throws IOException
 {
    PrintWriter out = new PrintWriter(System.out);
@@ -133,21 +130,15 @@ protected void initialize() throws IOException
    
    daysAvailable = Integer.parseInt(course.getRetakeDuration());
  
+   printQuizScheduleForm(out, in, quizList, retakesList, course);
  
- 
-
-
-
-
 }
 
 
 
 
 // doPost saves an appointment in a file and prints an acknowledgement
-@Override
-protected void doPost (HttpServletRequest request, HttpServletResponse response)
-                      throws ServletException, IOException
+protected void doPost () throws IOException
 {
    // No saving if IOException
    boolean IOerrFlag = false;
@@ -224,15 +215,12 @@ protected void doPost (HttpServletRequest request, HttpServletResponse response)
    servletUtils.printFooter (out);
 }
 
-/**
- * Print the body of HTML
- * @param out PrintWriter
- * @throws ServletException
- * @throws IOException
-*/
-private void printQuizScheduleForm (PrintWriter out, quizzes quizList, retakes retakesList, courseBean course)
-        throws ServletException, IOException
+
+private void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizList, retakes retakesList, courseBean course) throws IOException
 {
+  String studentName = "";
+  
+  
    // Check for a week to skip
    boolean skip = false;
    LocalDate startSkip = course.getStartSkip();
@@ -240,18 +228,10 @@ private void printQuizScheduleForm (PrintWriter out, quizzes quizList, retakes r
 
    boolean retakePrinted = false;
 
-   out.println ("<body onLoad=\"setFocusMain()\" bgcolor=\"#DDEEDD\">");
-   out.println ("");
-   out.println ("<center><h2>GMU quiz retake scheduler for class " + course.getCourseTitle() + "</h2></center>");
-   out.println ("<hr/>");
-   out.println ("");
-
-   // print the main form
-   out.println ("<form name='quizSchedule' method='post' action='" + thisServlet + "?courseID=" + courseID + "' >");
-   out.print   ("  <p>You can sign up for quiz retakes within the next two weeks. ");
-   out.print   ("Enter your name (as it appears on the class roster), ");
-   out.println ("then select which date, time, and quiz you wish to retake from the following list.");
-   out.println ("  <br/>");
+   out.println("GMU quiz retake scheduler for " + course.getCourseTitle() + ".");
+   out.println("You can sign up for quiz retakes within the next two weeks.");
+   out.print("Enter your name (as it appears on the class roster), ");
+   out.print("then select which date, time, and quiz you wish to retake from the following list.\n");
 
    LocalDate today  = LocalDate.now();
    LocalDate endDay = today.plusDays(new Long(daysAvailable));
@@ -260,40 +240,25 @@ private void printQuizScheduleForm (PrintWriter out, quizzes quizList, retakes r
    if (!endDay.isBefore(startSkip) && !endDay.isAfter(endSkip))
    {  // endDay is in a skip week, add 7 to endDay
       endDay = endDay.plusDays(new Long(7));
-      skip = true;
    }
 
-   out.print   ("  <p>Today is ");
+   out.print   ("  Today is ");
    out.println ((today.getDayOfWeek()) + ", " + today.getMonth() + " " + today.getDayOfMonth() );
-   out.print   ("  <p>Currently scheduling quizzes for the next two weeks, until ");
+   out.print   ("  Currently scheduling quizzes for the next two weeks, until ");
    out.println ((endDay.getDayOfWeek()) + ", " + endDay.getMonth() + " " + endDay.getDayOfMonth() );
-   out.println ("  <br/>");
 
-   out.print   ("  <p>Name: ");
-   out.println ("  <input type='text' id='studentName' name='studentName' size='50' />");
-   out.println ("  <br/>");
-   out.println ("  <br/>");
-
-   out.println ("  <table border=1 style='background-color:#99dd99'><tr><td>"); // outer table for borders
-   out.println ("  <tr><td>");
+   out.print   ("Enter Your Name: ");
+   studentName = in.nextLine();
+   
+   
+   
    for(retakeBean r: retakesList)
    {
       LocalDate retakeDay = r.getDate();
       if (!(retakeDay.isBefore (today)) && !(retakeDay.isAfter (endDay)))
       {
-         // if skip && retakeDay is after the skip week, print a white bg message
-         if (skip && retakeDay.isAfter(origEndDay))
-         {  // A "skip" week such as spring break.
-            out.println ("    <table border=1 width=100% style='background-color:white'>"); // inner table to format skip week
-            out.println ("      <tr><td>Skipping a week, no quiz or retakes.");
-            out.println ("    </table>"); // inner table for skip week
-            // Just print for the FIRST retake day after the skip week
-            skip = false;
-         }
-         retakePrinted = true;
-         out.println ("    <table width=100%>"); // inner table to format one retake
          // format: Friday, January 12, at 10:00am in EB 4430
-         out.println ("    <tr><td>" + retakeDay.getDayOfWeek() + ", " +
+         out.println ("Retake Session: " + r.getID() + " on " + retakeDay.getDayOfWeek() + ", " +
                       retakeDay.getMonth() + " " +
                       retakeDay.getDayOfMonth() + ", at " +
                       r.timeAsString() + " in " +
@@ -315,12 +280,6 @@ private void printQuizScheduleForm (PrintWriter out, quizzes quizList, retakes r
                out.println ("    <td><input type='checkbox' name='retakeReqs'  value='" + r.getID() + separator + q.getID() + "' id='q" + q.getID() + "r" + r.getID() + "'>");
             }
          }
-      }
-      if (retakePrinted)
-      {
-         out.println ("  </table>");
-         out.println ("  <tr><td>");
-         retakePrinted = false;
       }
    }
    out.println ("  <tr><td align='middle'><button id='submitRequest' type='submit' name='submitRequest' style='font-size:large'>Submit request</button>");

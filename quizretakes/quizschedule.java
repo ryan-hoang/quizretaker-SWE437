@@ -283,6 +283,8 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
       }
    }
    
+   out.println("\n");
+   
    boolean done = false;
    boolean failedAlready = false;
    ArrayList<String> idPairList = new ArrayList<String>();
@@ -296,8 +298,10 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        
        if(failedAlready)
        {
-         System.out.print(String.format("\033[%dA",1)); // Move up
          System.out.print("\033[2K");
+         System.out.print(String.format("\033[%dA",2)); // Move up
+         System.out.print("\033[2K");
+         out.println("That is not a valid selection.");
        }
        out.println("Please enter which retake session you would like to attend: ");
        retakeID = Integer.parseInt(in.nextLine());
@@ -308,11 +312,14 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        catch(NumberFormatException e)
        {
        failedAlready = true;
-       System.out.print(String.format("\033[%dA",2)); // Move up
        System.out.print("\033[2K");
+       System.out.print(String.format("\033[%dA",2)); // Move up
        out.println("That is not a valid selection.");
+       System.out.print("\033[2K");
        continue;
        }
+      
+       failedAlready = false;
       
        if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
        {
@@ -321,8 +328,33 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        }
        else
        {
+         if(failedAlready)
+         {
+         System.out.print(String.format("\033[%dA",3));
+         System.out.println("\033[2K");
+         System.out.println("\033[2K");
+         
+         System.out.println("\033[2K");
+         System.out.print(String.format("\033[%dA",4));
+         System.out.print("\033[2K");
          out.println("That is not a valid selection. please try again.");
+         System.out.println("\033[2K");
+         System.out.println("\033[2K");
+         System.out.print("\033[2K");
          continue;
+         }
+         else
+         {
+         failedAlready = true;
+         System.out.print("\033[2K");
+         System.out.print(String.format("\033[%dA",4));
+         System.out.print("\033[2K");
+         out.println("That is not a valid selection. please try again.");
+         System.out.println("\033[2K");
+         System.out.println("\033[2K");
+         System.out.print("\033[2K");
+         continue;
+         }
        }
        
        out.println("Would you like to make another selection? (y/n)");

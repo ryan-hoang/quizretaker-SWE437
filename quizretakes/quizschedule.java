@@ -9,6 +9,7 @@ import java.time.*;
 import java.lang.Long;
 import java.lang.String;
 
+import java.util.HashMap;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
@@ -52,6 +53,7 @@ public class quizschedule
    private static final String quizzesBase = "quiz-orig";
    private static final String retakesBase = "quiz-retakes";
    private static final String apptsBase   = "quiz-appts";
+   private static final String menuSeparator = "================================================================================";
 
    // Filenames to be built from above and the courseID parameter
    private String courseFileName;
@@ -64,13 +66,15 @@ public class quizschedule
    // Stored in course.xml file, default 14
    // Number of days a retake is offered after the quiz is given
    private int daysAvailable = 14;
-
-
-protected void initialize() throws IOException
+   
+   public quizschedule()
+   {}
+   
+protected void go() throws IOException
 {
    PrintWriter out = new PrintWriter(System.out);
    Scanner in = new Scanner(System.in);
-   courseBean course;
+   courseBean course = null;
    
    // Filenames to be built from above and the courseID
    String quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
@@ -80,7 +84,7 @@ protected void initialize() throws IOException
    // Load the quizzes and the retake times from disk
    quizzes quizList    = new quizzes();
    retakes retakesList = new retakes();
-   quizReader    qr = new quizReader();
+   quizReader qr = new quizReader();
    retakesReader rr = new retakesReader();
    boolean filesValid;
    do {
@@ -94,6 +98,7 @@ protected void initialize() throws IOException
        try 
        {
           course = cr.read(courseFileName);
+          daysAvailable = Integer.parseInt(course.getRetakeDuration());
        } 
        catch (Exception e) {
           out.println("Can't find course data file for " + courseID + ".");
@@ -126,36 +131,28 @@ protected void initialize() throws IOException
        {
          out.println("Cannot find all necessary data files for CourseID: " + courseID + ".");
        }
+       
     } while (!filesValid);
    
-   daysAvailable = Integer.parseInt(course.getRetakeDuration());
- 
    printQuizScheduleForm(out, in, quizList, retakesList, course);
- 
 }
 
 
-
-
 // doPost saves an appointment in a file and prints an acknowledgement
-protected void doPost () throws IOException
+protected void makeAppointment (String name, ArrayList<String> ids, String courseID) throws IOException
 {
    // No saving if IOException
    boolean IOerrFlag = false;
    String IOerrMessage = "";
 
    // Filename to be built from above and the courseID
-   courseID = request.getParameter("courseID");
    String apptsFileName   = dataLocation + apptsBase + "-" + courseID + ".txt";
 
    // Get name and list of retake requests from parameters
-   String studentName = request.getParameter ("studentName");
-   String[] allIDs    = request.getParameterValues ("retakeReqs");
+   String studentName = name;
+   String[] allIDs = ids.toArray(new String[ids.size()]);
 
-   response.setContentType ("text/html");
-   PrintWriter out = response.getWriter ();
-   servletUtils.printHeader (out);
-   out.println ("<body bgcolor=\"#DDEEDD\">");
+   PrintWriter out = new PrintWriter(System.out);
 
    if(allIDs != null && studentName != null && studentName.length() > 0)
    {
@@ -187,46 +184,39 @@ protected void doPost () throws IOException
       // Respond to the student
       if (IOerrFlag)
       {
-         out.println ("<p>");
          out.println (IOerrMessage);
       } else {
-         out.println ("<p>");
          if (allIDs.length == 1)
             out.println (studentName + ", your appointment has been scheduled.");
          else
             out.println (studentName + ", your appointments have been scheduled.");
-         out.println ("<p>Please arrive in time to finish the quiz before the end of the retake period.");
-         out.println ("<p>If you cannot make it, please cancel by sending email to your professor.");
+         out.println ("Please arrive in time to finish the quiz before the end of the retake period.");
+         out.println ("If you cannot make it, please cancel by sending email to your professor.");
       }
 
    } else { // allIDs == null or name is null
-      out.println ("<body bgcolor=\"#DDEEDD\">");
       if(allIDs == null)
-         out.println ("<p>You didn't choose any quizzes to retake.");
+         out.println ("You didn't choose any quizzes to retake.");
       if(studentName == null || studentName.length() == 0)
-         out.println ("<p>You didn't give a name ... no anonymous quiz retakes.");
-
-      thisServlet = (request.getRequestURL()).toString();
-      // CS server has a flaw--requires https & 8443, but puts http & 8080 on the requestURL
-      thisServlet = thisServlet.replace("http", "https");
-      thisServlet = thisServlet.replace("8080", "8443");
-      out.println("<p><a href='" + thisServlet + "?courseID=" + courseID + "'>You can try again if you like.</a>");
+         out.println ("You didn't give a name ... no anonymous quiz retakes.");
+      out.println("You can try again if you like.");
    }
-   servletUtils.printFooter (out);
+
 }
 
 
-private void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizList, retakes retakesList, courseBean course) throws IOException
+protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizList, retakes retakesList, courseBean course) throws IOException
 {
-  String studentName = "";
-  
-  
+   String studentName = "";
+   int retakeID;
+   int quizID;
+   
+   // maps retake IDs to lists of valid quiz IDs. Used to perform check at the end to ensure the user entered a valid session/quiz pair.
+   HashMap<Integer,ArrayList<Integer>> retakeQuizMap = new HashMap<Integer,ArrayList<Integer>>(); 
+   
    // Check for a week to skip
-   boolean skip = false;
    LocalDate startSkip = course.getStartSkip();
    LocalDate endSkip   = course.getEndSkip();
-
-   boolean retakePrinted = false;
 
    out.println("GMU quiz retake scheduler for " + course.getCourseTitle() + ".");
    out.println("You can sign up for quiz retakes within the next two weeks.");
@@ -250,20 +240,27 @@ private void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizLis
    out.print   ("Enter Your Name: ");
    studentName = in.nextLine();
    
-   
-   
    for(retakeBean r: retakesList)
    {
       LocalDate retakeDay = r.getDate();
       if (!(retakeDay.isBefore (today)) && !(retakeDay.isAfter (endDay)))
       {
-         // format: Friday, January 12, at 10:00am in EB 4430
-         out.println ("Retake Session: " + r.getID() + " on " + retakeDay.getDayOfWeek() + ", " +
+        /*
+        format:
+          ================================================================================
+          Retake Session: 2 takes place on Friday, January 12, at 10:00am in EB 4430
+          ================================================================================
+        */
+         out.println(menuSeparator);
+         out.println ("Retake Session: " + r.getID() + " takes place on " + retakeDay.getDayOfWeek() + ", " +
                       retakeDay.getMonth() + " " +
                       retakeDay.getDayOfMonth() + ", at " +
                       r.timeAsString() + " in " +
                       r.getLocation());
-
+         out.println(menuSeparator);
+         
+         retakeQuizMap.put(r.getID(), new ArrayList<Integer>());
+         
          for(quizBean q: quizList)
          {
             LocalDate quizDay = q.getDate();
@@ -275,31 +272,43 @@ private void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizLis
             if (!quizDay.isAfter(retakeDay) && !retakeDay.isAfter(lastAvailableDay) &&
                 !today.isAfter(retakeDay) && !retakeDay.isAfter(endDay))
             {
-               out.println ("    <tr><td align='right'><label for='q" + q.getID() + "r" + r.getID() + "'>Quiz " + q.getID() + " from " + quizDay.getDayOfWeek() + ", " + quizDay.getMonth() + " " + quizDay.getDayOfMonth() + ":</label> ");
-               // Value is "retakeID:quiziD"
-               out.println ("    <td><input type='checkbox' name='retakeReqs'  value='" + r.getID() + separator + q.getID() + "' id='q" + q.getID() + "r" + r.getID() + "'>");
+               out.println("Quiz " + q.getID() + " from " + quizDay.getDayOfWeek() + ", " + quizDay.getMonth() + " " + quizDay.getDayOfMonth());
+               retakeQuizMap.get(r.getID()).add(q.getID()); // add this quiz to the list of quizzes that the current retake id maps to.
             }
          }
       }
    }
-   out.println ("  <tr><td align='middle'><button id='submitRequest' type='submit' name='submitRequest' style='font-size:large'>Submit request</button>");
-   out.println ("  </table>");
-   out.println ("</form>");
-
-
-   out.println ("<br/>");
-   out.println ("<br/>");
-   out.println ("<br/>");
-   out.println ("<br/>");
-   out.println ("<table border=1>");
-   out.println ("<tr><td align='middle'>All quiz retake opportunities</td></tr>");
-   for(retakeBean r: retakesList)
+   
+   boolean done = false;
+   ArrayList<String> idPairList = new ArrayList<String>();
+         
+   while(!done)
    {
-      out.print   ("  <tr><td>");
-      out.print   (r);
-      out.println ("  </td></td>");
+       String idPair = "";
+       out.print("Please enter which retake session you would like to attend: ");
+       retakeID = in.nextInt();
+       
+       out.print("Please enter which quiz you would like to retake.");
+       quizID = in.nextInt();
+       
+       if(retakeQuizMap.get(retakeID).contains(quizID))
+       {
+         idPair = retakeID + "," + quizID;
+         idPairList.add(idPair);
+       }
+       else
+       {
+         out.println("That is not a valid selection. please try again.");
+         continue;
+       }
+       
+       out.println("Would you like to make another selection? (y/n)");
+       if(in.nextLine().equalsIgnoreCase("n"))
+       {
+         done = true;
+       } 
    }
-   out.println ("</table>");
+   makeAppointment(studentName,idPairList,course.getCourseID());
 }
 
 } // end quizschedule class

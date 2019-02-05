@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.time.*;
 import java.lang.Long;
 import java.lang.String;
+import java.lang.NumberFormatException;
 
 import java.util.HashMap;
 import java.util.Scanner;
@@ -16,7 +17,7 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
-import java.io.IOException;
+
 
 /**
  * @author Jeff Offutt
@@ -283,17 +284,36 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    }
    
    boolean done = false;
+   boolean failedAlready = false;
    ArrayList<String> idPairList = new ArrayList<String>();
    out.flush();
    while(!done)
    {
        String idPair = "";
+       
+       try
+       {
+       
+       if(failedAlready)
+       {
+         System.out.print(String.format("\033[%dA",1)); // Move up
+         System.out.print("\033[2K");
+       }
        out.println("Please enter which retake session you would like to attend: ");
-       retakeID = Integer.parseInt(in.next());
+       retakeID = Integer.parseInt(in.nextLine());
        
        out.println("Please enter which quiz you would like to retake.");
-       quizID = Integer.parseInt(in.next());
-       
+       quizID = Integer.parseInt(in.nextLine());
+       }
+       catch(NumberFormatException e)
+       {
+       failedAlready = true;
+       System.out.print(String.format("\033[%dA",2)); // Move up
+       System.out.print("\033[2K");
+       out.println("That is not a valid selection.");
+       continue;
+       }
+      
        if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
        {
          idPair = retakeID + "," + quizID;

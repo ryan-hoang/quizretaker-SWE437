@@ -289,10 +289,10 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    {
        String idPair = "";
        out.println("Please enter which retake session you would like to attend: ");
-       retakeID = in.nextInt();
+       retakeID = Integer.parseInt(in.next());
        
        out.println("Please enter which quiz you would like to retake.");
-       quizID = in.nextInt();
+       quizID = Integer.parseInt(in.next());
        
        if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
        {

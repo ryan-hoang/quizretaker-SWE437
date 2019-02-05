@@ -47,7 +47,7 @@ public class quizschedule
    // Data files
    // location maps to /webapps/offutt/WEB-INF/data/ from a terminal window.
    // These names show up in all servlets
-   private static final String dataLocation    = "/data/";
+   private static final String dataLocation    = "quizretakes/data/";
    static private final String separator = ",";
    private static final String courseBase   = "course";
    private static final String quizzesBase = "quiz-orig";
@@ -72,15 +72,14 @@ public class quizschedule
    
 protected void go() throws IOException
 {
-   PrintWriter out = new PrintWriter(System.out);
+   PrintWriter out = new PrintWriter(System.out, true);
    Scanner in = new Scanner(System.in);
    courseBean course = null;
    
    // Filenames to be built from above and the courseID
-   String quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
-   String retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
-   String apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
-   
+   String quizzesFileName = "";
+   String retakesFileName = "";
+   String apptsFileName = "";
    // Load the quizzes and the retake times from disk
    quizzes quizList    = new quizzes();
    retakes retakesList = new retakes();
@@ -99,6 +98,10 @@ protected void go() throws IOException
        {
           course = cr.read(courseFileName);
           daysAvailable = Integer.parseInt(course.getRetakeDuration());
+          // Filenames to be built from above and the courseID
+          quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
+          retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
+          apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
        } 
        catch (Exception e) {
           out.println("Can't find course data file for " + courseID + ".");
@@ -152,7 +155,7 @@ protected void makeAppointment (String name, ArrayList<String> ids, String cours
    String studentName = name;
    String[] allIDs = ids.toArray(new String[ids.size()]);
 
-   PrintWriter out = new PrintWriter(System.out);
+   PrintWriter out = new PrintWriter(System.out,true);
 
    if(allIDs != null && studentName != null && studentName.length() > 0)
    {
@@ -218,9 +221,9 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    LocalDate startSkip = course.getStartSkip();
    LocalDate endSkip   = course.getEndSkip();
 
-   out.println("GMU quiz retake scheduler for " + course.getCourseTitle() + ".");
+   out.println("\nGMU quiz retake scheduler for " + course.getCourseTitle() + ".");
    out.println("You can sign up for quiz retakes within the next two weeks.");
-   out.print("Enter your name (as it appears on the class roster), ");
+   out.print("\nEnter your name (as it appears on the class roster), ");
    out.print("then select which date, time, and quiz you wish to retake from the following list.\n");
 
    LocalDate today  = LocalDate.now();
@@ -232,12 +235,12 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
       endDay = endDay.plusDays(new Long(7));
    }
 
-   out.print   ("  Today is ");
-   out.println ((today.getDayOfWeek()) + ", " + today.getMonth() + " " + today.getDayOfMonth() );
+   out.print   ("\n  Today is ");
+   out.print ((today.getDayOfWeek()) + ", " + today.getMonth() + " " + today.getDayOfMonth() );
    out.print   ("  Currently scheduling quizzes for the next two weeks, until ");
    out.println ((endDay.getDayOfWeek()) + ", " + endDay.getMonth() + " " + endDay.getDayOfMonth() );
 
-   out.print   ("Enter Your Name: ");
+   out.println   ("\nEnter Your Name: ");
    studentName = in.nextLine();
    
    for(retakeBean r: retakesList)

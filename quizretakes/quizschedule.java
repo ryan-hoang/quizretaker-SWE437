@@ -284,14 +284,14 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    
    boolean done = false;
    ArrayList<String> idPairList = new ArrayList<String>();
-         
+   out.flush();
    while(!done)
    {
        String idPair = "";
-       out.print("Please enter which retake session you would like to attend: ");
+       out.println("Please enter which retake session you would like to attend: ");
        retakeID = in.nextInt();
        
-       out.print("Please enter which quiz you would like to retake.");
+       out.println("Please enter which quiz you would like to retake.");
        quizID = in.nextInt();
        
        if(retakeQuizMap.get(retakeID).contains(quizID))
@@ -306,7 +306,8 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        }
        
        out.println("Would you like to make another selection? (y/n)");
-       if(in.nextLine().equalsIgnoreCase("n"))
+       String input = in.next();
+       if(input.equalsIgnoreCase("n"))
        {
          done = true;
        } 

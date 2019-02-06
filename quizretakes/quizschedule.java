@@ -67,16 +67,16 @@ public class quizschedule
    // Stored in course.xml file, default 14
    // Number of days a retake is offered after the quiz is given
    private int daysAvailable = 14;
-   
+
    public quizschedule()
    {}
-   
+
 protected void go() throws IOException
 {
    PrintWriter out = new PrintWriter(System.out, true);
    Scanner in = new Scanner(System.in);
    courseBean course = null;
-   
+
    // Filenames to be built from above and the courseID
    String quizzesFileName = "";
    String retakesFileName = "";
@@ -93,9 +93,9 @@ protected void go() throws IOException
        courseID = in.nextLine();
        courseReader cr = new courseReader();
        courseFileName = dataLocation + courseBase + "-" + courseID + ".xml";
-       
+
        //Try to read in Course xml file.
-       try 
+       try
        {
           course = cr.read(courseFileName);
           daysAvailable = Integer.parseInt(course.getRetakeDuration());
@@ -103,42 +103,42 @@ protected void go() throws IOException
           quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
           retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
           apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
-       } 
+       }
        catch (Exception e) {
           out.println("Can't find course data file for " + courseID + ".");
           filesValid = false;
 		  continue;
        }
-       
+
        //Try to read in Quiz xml file.
-       try 
+       try
        {
           quizList = qr.read (quizzesFileName);
-       } 
+       }
        catch (Exception e)
        {
           out.println("Can't find quiz data file for " + courseID + ".");
           filesValid = false;
        }
-       
+
        //Try to read in Retake xml file.
-       try 
+       try
        {
           retakesList = rr.read (retakesFileName);
-       } 
+       }
        catch (Exception e)
        {
           out.println("Can't find retakes data file for " + courseID + ".");
           filesValid = false;
-       }  
-       
+       }
+
        if(!filesValid)
        {
          out.println("Cannot find all necessary data files for CourseID: " + courseID + ".");
        }
-       
+
     } while (!filesValid);
-   
+
    printQuizScheduleForm(out, in, quizList, retakesList, course);
 }
 
@@ -215,10 +215,10 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    String studentName = "";
    int retakeID;
    int quizID;
-   
+
    // maps retake IDs to lists of valid quiz IDs. Used to perform check at the end to ensure the user entered a valid session/quiz pair.
-   HashMap<Integer,ArrayList<Integer>> retakeQuizMap = new HashMap<Integer,ArrayList<Integer>>(); 
-   
+   HashMap<Integer,ArrayList<Integer>> retakeQuizMap = new HashMap<Integer,ArrayList<Integer>>();
+
    // Check for a week to skip
    LocalDate startSkip = course.getStartSkip();
    LocalDate endSkip   = course.getEndSkip();
@@ -244,7 +244,7 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
 
    out.println   ("\nEnter Your Name: ");
    studentName = in.nextLine();
-   
+
    for(retakeBean r: retakesList)
    {
       LocalDate retakeDay = r.getDate();
@@ -263,9 +263,9 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
                       r.timeAsString() + " in " +
                       r.getLocation());
          out.println(menuSeparator);
-         
+
          retakeQuizMap.put(r.getID(), new ArrayList<Integer>());
-         
+
          for(quizBean q: quizList)
          {
             LocalDate quizDay = q.getDate();
@@ -283,9 +283,9 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
          }
       }
    }
-   
+
    out.println("\n");
-   
+
    boolean done = false;
    boolean failedAlready = false;
    ArrayList<String> idPairList = new ArrayList<String>();
@@ -293,7 +293,7 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
    while(!done)
    {
        String idPair = "";
-       
+
        try
        {
            if(failedAlready)
@@ -305,7 +305,7 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
            }
            out.println("Please enter which retake session you would like to attend: ");
            retakeID = Integer.parseInt(in.nextLine());
-           
+
            out.println("Please enter which quiz you would like to retake.");
            quizID = Integer.parseInt(in.nextLine());
        }
@@ -318,10 +318,15 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        System.out.print("\033[2K");
        continue;
        }
-      
-       if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
+       idPair = retakeID + "," + quizID;
+       if(idPairList.contains(idPair)) //checks to see if this pair was scheduled during this
        {
-         idPair = retakeID + "," + quizID;
+         out.println("You have already scheduled this quiz and session. Please choose a different one.");
+         continue;
+       }
+       else if((retakeQuizMap.get(retakeID) != null) && retakeQuizMap.get(retakeID).contains(quizID))
+       {
+         //idPair = retakeID + "," + quizID;
          idPairList.add(idPair);
        }
        else
@@ -329,8 +334,8 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
          out.println("That is not a valid selection. please try again.");
          continue;
        }
-       
-       out.println("Would you like to make another selection? (y/n)");
+       out.println("Thank you for scheduling to retake Quiz " +quizID+ " during Session "+retakeID);
+       out.println("Would you like to schedule another quiz retake? (y/n)");
        String input = in.nextLine();
        if(input.equalsIgnoreCase("n"))
        {

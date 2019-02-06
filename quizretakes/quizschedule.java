@@ -48,7 +48,7 @@ public class quizschedule
 // Data files
 // location maps to /webapps/offutt/WEB-INF/data/ from a terminal window.
 // These names show up in all servlets
-private static final String dataLocation    = "quizretakes/data/";
+private static final String dataLocation    = "quizretakes/";
 static private final String separator = ",";
 private static final String courseBase   = "course";
 private static final String quizzesBase = "quiz-orig";

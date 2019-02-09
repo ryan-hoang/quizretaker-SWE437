@@ -34,7 +34,7 @@ public class courseBean
    // *** Constructor *** //
    public courseBean (String courseID, String courseTitle, String retakeDuration,
                       LocalDate startSkip, LocalDate endSkip, String dataLocation)
-   {
+      {
       this.courseID       = courseID;
       this.courseTitle    = courseTitle;
       this.retakeDuration = retakeDuration;

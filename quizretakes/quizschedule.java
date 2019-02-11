@@ -74,16 +74,16 @@ public class quizschedule
    // Stored in course.xml file, default 14
    // Number of days a retake is offered after the quiz is given
    private int daysAvailable = 14;
-   
+
    public quizschedule()
    {}
-   
+
 protected void go() throws IOException
 {
    PrintWriter out = new PrintWriter(System.out, true);
    Scanner in = new Scanner(System.in);
    courseBean course = null;
-   
+
    // Filenames to be built from above and the courseID
    String quizzesFileName = "";
    String retakesFileName = "";
@@ -135,9 +135,9 @@ protected void go() throws IOException
        courseID = in.nextLine();
        courseReader cr = new courseReader();
        courseFileName = dataLocation + courseBase + "-" + courseID + ".xml";
-       
+
        //Try to read in Course xml file.
-       try 
+       try
        {
           course = cr.read(courseFileName);
           daysAvailable = Integer.parseInt(course.getRetakeDuration());
@@ -145,40 +145,40 @@ protected void go() throws IOException
           quizzesFileName = dataLocation + quizzesBase + "-" + courseID + ".xml";
           retakesFileName = dataLocation + retakesBase + "-" + courseID + ".xml";
           apptsFileName   = dataLocation + apptsBase   + "-" + courseID + ".txt";
-       } 
+       }
        catch (Exception e) {
           out.println("Can't find course data file for " + courseID + ".");
           filesValid = false;
           continue;
        }
-       
+
        //Try to read in Quiz xml file.
-       try 
+       try
        {
           quizList = qr.read (quizzesFileName);
-       } 
+       }
        catch (Exception e)
        {
           out.println("Can't find quiz data file for " + courseID + ".");
           filesValid = false;
        }
-       
+
        //Try to read in Retake xml file.
-       try 
+       try
        {
           retakesList = rr.read (retakesFileName);
-       } 
+       }
        catch (Exception e)
        {
           out.println("Can't find retakes data file for " + courseID + ".");
           filesValid = false;
-       }  
-       
+       }
+
        if(!filesValid)
        {
          out.println("Cannot find all necessary data files for CourseID: " + courseID + ".");
        }
-       
+
     } while (!filesValid);
    if (optionsStudent.contains(signInOption))
    {
@@ -300,7 +300,7 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        schRetakes[index] = tempList;
        index++;
    }
-   sortbyColumn(schRetakes,0);
+   sortbyColumn(schRetakes,0); //have to
 
 
 
@@ -326,8 +326,8 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
        out.print((today.getDayOfWeek()) + ", " + today.getMonth() + " " + today.getDayOfMonth());
        out.println("\nWelcome professor, please choose a selection.");
        out.println("Enter \"1\" if you want the list of all quiz retakes that still need to be completed.");
-       out.println("Enter \"2\" if you want the full list of all past and future quiz retakes.");
-
+       //out.println("Enter \"2\" if you want the full list of all past and future quiz retakes.");
+       //probably need some kind of option to see all of the currently reserved quizes
        viewOption = in.nextLine();
 
        while (!viewOption.equals("1") && !viewOption.equals("2"))
@@ -353,12 +353,22 @@ protected void printQuizScheduleForm (PrintWriter out, Scanner in, quizzes quizL
                            r.timeAsString() + " in " +
                            r.getLocation());
                    out.println(menuSeparator);
-
+                   for(String[] x:schRetakes)
+                   {
+                     if(x[0]==null)
+                     {
+                       break;
+                     }
+                     else if(Integer.parseInt(x[0]) == r.getID())
+                     {
+                       //print the array
+                       out.println("Quiz: "+x[1]+ " Student: "+x[2]);
+                     }
+                   }
                    retakeQuizMap.put(r.getID(), new ArrayList<Integer>());
                }
            }
        }
-
 
    }
    //the student view of the retake application allows for signing up

@@ -34,4 +34,4 @@ courseBean.class : courseBean.java
 	cd ..; javac quizretakes/courseBean.java ; cd quizretakes 
 
 printQuizScheduleFormTests.class : printQuizScheduleFormTests.java
-	cd ..; javac quizretakes/printQuizScheduleFormTests.java ; cd quizretakes
+	cd ..; javac -Xlint:unchecked quizretakes/printQuizScheduleFormTests.java ; cd quizretakes

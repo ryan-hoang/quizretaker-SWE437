@@ -4,10 +4,12 @@ import org.junit.*;
 import java.lang.reflect.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.regex.Pattern;
+import static org.hamcrest.Matchers.*;
 
 public class printQuizScheduleFormTests
 {
-private Class testSubject;
+private Class<?> testSubject;
 private quizschedule q;
 private Method meth; //its a hell of a drug
 private courseBean course;
@@ -66,20 +68,38 @@ public void test1() throws Exception
   //assertEquals("\n\n******************************************************************************\nGMU quiz retake scheduler for class Software testing\n******************************************************************************\n\n\nYou can sign up for quiz retakes within the next two weeks. \nEnter your name (as it appears on the class roster), \nthen select which date, time, and quiz you wish to retake from the following list.\n\nToday is TUESDAY, FEBRUARY 26\nCurrently scheduling quizzes for the next two weeks, until TUESDAY, MARCH 12\n\n", testingOut.toString());
 }
 
-@Test // quiz from more than 14 days ago. Expected: Shouldnt show up in the quiz listings at all.
+@Test // quiz from more than 14 days ago. Expected: Shouldnt show up in the quiz listings at all.  (use regex to check)
 public void testExpiredQuiz()
-{}
+{
+  assertThat("test", matchesPattern("test"));
+}
 
-@Test // quiz hasnt happened yet so it isnt a valid option. Expected: Shouldnt show up in the quiz listings at all.
+@Test // quiz hasnt happened yet so it isnt a valid option. Expected: Shouldnt show up in the quiz listings at all. (use regex to check)
 public void testFutureQuiz()
 {}
 
-@Test // this is a valid quiz. Expected: We should see it in the list 
+@Test // this is a valid quiz. Expected: We should see it in the list   (use regex to check)
 public void testValidQuiz()
 {}
   
-@Test // 
-public void testExpiredQuiz()
+@Test // retake session is on a date that already passed. Expected: should not show up  (use regex to check)
+public void testExpiredRetake()
+{}
+
+@Test // retake session is more than 2 weeks in the future Expected: should not show up  (use regex to check)
+public void testFutureRetake()
+{}
+
+@Test // retake session is valid and within 2 weeks from today. Expected: should show up. (use regex to check)
+public void testValidRetake()
+{}
+  
+@Test // todays date is correctly displayed. Expected: i.e. "Today is TUESDAY, FEBRUARY 26" (use regex to check)
+public void testTodaysDate()
+{}
+
+@Test // date 2 weeks from todays date should also be shown. Expected: i.e. "... until TUESDAY, MARCH 12" (use regex to check)
+public void testMaxRetakeDate()
 {}
 
 }

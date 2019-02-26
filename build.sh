@@ -1,1 +1,0 @@
-cd quizretakes ; make ; cd .. ; java quizretakes.quizschedule ;

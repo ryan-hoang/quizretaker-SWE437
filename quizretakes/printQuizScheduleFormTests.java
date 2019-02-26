@@ -60,12 +60,27 @@ public void cleanup()
 @Test
 public void test1() throws Exception
 {
-  meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
-  meth.setAccessible(true);
-  meth.invoke(q, new quizzes(), new retakes(), course); 
-assertEquals("\n\n******************************************************************************\nGMU quiz retake scheduler for class Software testing\n******************************************************************************\n\n\nYou can sign up for quiz retakes within the next two weeks. \nEnter your name (as it appears on the class roster), \nthen select which date, time, and quiz you wish to retake from the following list.\n\nToday is TUESDAY, FEBRUARY 26\nCurrently scheduling quizzes for the next two weeks, until TUESDAY, MARCH 12\n\n", testingOut.toString());
+  //meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
+  //meth.setAccessible(true);
+  //meth.invoke(q, new quizzes(), new retakes(), course); 
+  //assertEquals("\n\n******************************************************************************\nGMU quiz retake scheduler for class Software testing\n******************************************************************************\n\n\nYou can sign up for quiz retakes within the next two weeks. \nEnter your name (as it appears on the class roster), \nthen select which date, time, and quiz you wish to retake from the following list.\n\nToday is TUESDAY, FEBRUARY 26\nCurrently scheduling quizzes for the next two weeks, until TUESDAY, MARCH 12\n\n", testingOut.toString());
 }
 
+@Test // quiz from more than 14 days ago. Expected: Shouldnt show up in the quiz listings at all.
+public void testExpiredQuiz()
+{}
+
+@Test // quiz hasnt happened yet so it isnt a valid option. Expected: Shouldnt show up in the quiz listings at all.
+public void testFutureQuiz()
+{}
+
+@Test // this is a valid quiz. Expected: We should see it in the list 
+public void testValidQuiz()
+{}
+  
+@Test // 
+public void testExpiredQuiz()
+{}
 
 }
 

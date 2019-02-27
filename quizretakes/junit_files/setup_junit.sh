@@ -1,1 +1,1 @@
-workingdirectory=$(pwd) ; export CLASSPATH=$CLASSPATH:$workingdirectory/junit.jar ; export CLASSPATH=$CLASSPATH:$workingdirectory/hamcrest.jar
+export CLASSPATH=$CLASSPATH:"$PWD/junit.jar" ; export CLASSPATH=$CLASSPATH:"$PWD/hamcrest.jar" 

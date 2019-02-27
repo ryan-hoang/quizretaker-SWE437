@@ -84,110 +84,110 @@ public class printQuizScheduleFormTests
     @Test // quiz from more than 14 days ago. Expected: Shouldnt show up in the quiz listings at all.  (use regex to check)
     public void testExpiredQuiz()  throws Exception
     {
-      course.setStartSkip(today.minusDays(10)); //set skip start to 10 days ago
-      course.setEndSkip(today.minusDays(5)); // set end of the skip period to 5 days ago
-      LocalDate retakeDate = today;
-      LocalDate quizGiven = today.minusDays(15);  //quiz date says it happened 15 days ago so its no longer valid for a retake
-      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(10)); //set skip start to 10 days ago, Controllability
+      course.setEndSkip(today.minusDays(5)); // set end of the skip period to 5 days ago, Controllability
+      LocalDate retakeDate = today;//Controllability
+      LocalDate quizGiven = today.minusDays(15);  //quiz date says it happened 15 days ago so its no longer valid for a retake, Controllability
+      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);//Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);//Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, quizList, retakeList, course); 
       
-      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth());
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth());// Observability
+      testMatch = testPattern.matcher(testingOut.toString());//  Observability
       if(debug) {System.err.println("\nTEST_EXPIRED_QUIZ Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertEquals(false,testMatch.find()); 
+      assertEquals(false,testMatch.find()); // Observability
     }
 
     @Test // quiz hasnt happened yet so it isnt a valid option. Expected: Shouldnt show up in the quiz listings at all. (use regex to check)
     public void testFutureQuiz() throws Exception
     {
-      course.setStartSkip(today.minusDays(10)); //set skip start to 10 days ago
-      course.setEndSkip(today.minusDays(5)); // set end of the skip period to 5 days ago
-      LocalDate retakeDate = today;
-      LocalDate quizGiven = today.plusDays(1);  //quiz date says it took place tomorrow which is invalid.
-      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(10)); //set skip start to 10 days ago, Controllability
+      course.setEndSkip(today.minusDays(5)); // set end of the skip period to 5 days ago, Controllability
+      LocalDate retakeDate = today;// Controllability
+      LocalDate quizGiven = today.plusDays(1);  //quiz date says it took place tomorrow which is invalid. Controllability
+      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, quizList, retakeList, course); 
       
-      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth());
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth()); // Observability
+      testMatch = testPattern.matcher(testingOut.toString());// Observability
       if(debug) {System.err.println("\nTEST_FUTURE_QUIZ Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertEquals(false,testMatch.find()); 
+      assertEquals(false,testMatch.find());// Observability
     }
 
     @Test // this is a valid quiz. Expected: We should see it in the list   (use regex to check)
     public void testValidQuiz() throws Exception
     {
-      course.setStartSkip(today.minusDays(10)); // set the beginning of the skip period to 10 days ago
-      course.setEndSkip(today.minusDays(5)); // set the end of the skip period to 5 days ago
-      LocalDate retakeDate = today;
-      LocalDate quizGiven = today.minusDays(1);
-      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(10)); // set the beginning of the skip period to 10 days ago, Controllability
+      course.setEndSkip(today.minusDays(5)); // set the end of the skip period to 5 days ago, Controllability
+      LocalDate retakeDate = today;// Controllability
+      LocalDate quizGiven = today.minusDays(1); // Controllability
+      quizList = new quizzes(1, quizGiven.getMonthValue(), quizGiven.getDayOfMonth(),15,30);// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, quizList, retakeList, course); 
       
-      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth());
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("1\\)\\sQuiz\\s1\\sfrom\\s" + quizGiven.getDayOfWeek() + ",\\s" + quizGiven.getMonth());// Observability
+      testMatch = testPattern.matcher(testingOut.toString());// Observability
       if(debug) {System.err.println("\nTEST_VALID_QUIZ Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertEquals(true,testMatch.find()); 
+      assertEquals(true,testMatch.find()); // Observability
     }
       
     @Test // retake session is on a date that already passed. Expected: should not show up  (use regex to check)
     public void testExpiredRetake() throws Exception
     {
-      course.setStartSkip(today.minusDays(10)); // set the beginning of the skip period to 10 days ago
-      course.setEndSkip(today.minusDays(5)); // set the end of the skip period to 5 days ago
-      LocalDate retakeDate = today.minusDays(2);
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(10)); // set the beginning of the skip period to 10 days ago, Controllability
+      course.setEndSkip(today.minusDays(5)); // set the end of the skip period to 5 days ago, Controllability
+      LocalDate retakeDate = today.minusDays(2);// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), retakeList, course); 
       
-      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");// Observability
+      testMatch = testPattern.matcher(testingOut.toString());// Observability
       if(debug) {System.err.println("\nTEST_EXPIRED_RETAKE Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertEquals(false,testMatch.find()); 
+      assertEquals(false,testMatch.find()); // Observability
     }
 
     @Test // retake session is more than 2 weeks in the future Expected: should not show up  (use regex to check)
     public void testFutureRetake() throws Exception
     {
-      course.setStartSkip(today.minusDays(2)); // set the beginning of the skip period to 2 days ago
-      course.setEndSkip(today.minusDays(1)); // set the end of the skip period to yesterday
-      LocalDate retakeDate = today.plusDays(15); // set the retake more than 2 weeks away
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(2)); // set the beginning of the skip period to 2 days ago, Controllability
+      course.setEndSkip(today.minusDays(1)); // set the end of the skip period to yesterday, Controllability
+      LocalDate retakeDate = today.plusDays(15); // set the retake more than 2 weeks away, Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), retakeList, course); 
       
-      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");// Observability
+      testMatch = testPattern.matcher(testingOut.toString());// Observability
       if(debug) {System.err.println("\nTEST_FUTURE_RETAKE Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertFalse(testMatch.find()); 
+      assertFalse(testMatch.find()); // Observability
     }
       
     @Test // todays date is correctly displayed. Expected: i.e. "Today is TUESDAY, FEBRUARY 26" (use regex to check)
     public void testTodaysDate() throws Exception
     {
-      meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
-      meth.setAccessible(true);
-      meth.invoke(q, new quizzes(), new retakes(), course); 
+      meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);//Controllability
+      meth.setAccessible(true);// Controllability
+      meth.invoke(q, new quizzes(), new retakes(), course); //Controllability
       
-      testPattern = Pattern.compile("Today\\sis\\s" + today.getDayOfWeek() + ",\\s" + today.getMonth() + "\\s" + today.getDayOfMonth());
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("Today\\sis\\s" + today.getDayOfWeek() + ",\\s" + today.getMonth() + "\\s" + today.getDayOfMonth());// Observability
+      testMatch = testPattern.matcher(testingOut.toString());// Observability
       if(debug) {System.err.println("\nTEST_TODAYS_DATE Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertTrue(testMatch.find());
+      assertTrue(testMatch.find()); // Observability
     }
 
     @Test // date 2 weeks from todays date should also be shown. Expected: i.e. "... until TUESDAY, MARCH 12" (use regex to check)
@@ -197,64 +197,64 @@ public class printQuizScheduleFormTests
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), new retakes(), course); 
       
-      testPattern = Pattern.compile("Currently\\sscheduling\\squizzes\\sfor\\sthe\\snext\\stwo\\sweeks,\\suntil\\s" + (endDay.getDayOfWeek()) + ",\\s" + endDay.getMonth() + "\\s" + endDay.getDayOfMonth());
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("Currently\\sscheduling\\squizzes\\sfor\\sthe\\snext\\stwo\\sweeks,\\suntil\\s" + (endDay.getDayOfWeek()) + ",\\s" + endDay.getMonth() + "\\s" + endDay.getDayOfMonth()); // Observability
+      testMatch = testPattern.matcher(testingOut.toString()); // Observability
       if(debug) {System.err.println("\nTEST_MAX_RETAKE_DATE Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertTrue(testMatch.find());  
+      assertTrue(testMatch.find());  // Observability
     }
       
     @Test // a retake session will be privided that is within the skip window. It should not appear. Expected: test will fail if the regex matcher finds something.
     public void testRetakeDuringSkip() throws Exception
     {
-      course.setStartSkip(today.minusDays(1)); // set the beginning of the skip period to yesterday
-      course.setEndSkip(today.plusDays(1)); // set the end of the skip period to tomorrow
-      LocalDate retakeDate = today;
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(1)); // set the beginning of the skip period to yesterday, Controllability
+      course.setEndSkip(today.plusDays(1)); // set the end of the skip period to tomorrow, Controllability
+      LocalDate retakeDate = today;// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), retakeList, course); 
       
-      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");// Observability
+      testMatch = testPattern.matcher(testingOut.toString());  // Observability
       if(debug) {System.err.println("\nTEST_RETAKE_DURING_SKIP Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertEquals(false,testMatch.find()); 
+      assertEquals(false,testMatch.find()); // Observability
     }
       
     @Test // retake session after the skip window. Expected: should find the retake session present in the output.
     public void testRetakeAfterSkip() throws Exception
     {
-      course.setStartSkip(today.minusDays(2)); // set the beginning of the skip period to 2 days ago
-      course.setEndSkip(today.minusDays(1)); // set the end of the skip period to yesterday
-      LocalDate retakeDate = today;
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.minusDays(2)); // set the beginning of the skip period to 2 days ago, Controllability
+      course.setEndSkip(today.minusDays(1)); // set the end of the skip period to yesterday, Controllability
+      LocalDate retakeDate = today;// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), retakeList, course); 
       
-      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION"); // Observability
+      testMatch = testPattern.matcher(testingOut.toString()); // Observability
       if(debug) {System.err.println("\nTEST_RETAKE_AFTER_SKIP Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertTrue(testMatch.find()); 
+      assertTrue(testMatch.find()); // Observability
     }
 
     @Test // retake session before skip window. Expected: should find the retake session present in the output.
     public void testRetakeBeforeSkip() throws Exception
     {
-      course.setStartSkip(today.plusDays(1)); // set the beginning of the skip period to yesterday
-      course.setEndSkip(today.plusDays(3)); // set the end of the skip period to tomorrow
-      LocalDate retakeDate = today;
-      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);
+      course.setStartSkip(today.plusDays(1)); // set the beginning of the skip period to yesterday, Controllability
+      course.setEndSkip(today.plusDays(3)); // set the end of the skip period to tomorrow, Controllability
+      LocalDate retakeDate = today;// Controllability
+      retakeList = new retakes(1,"TESTLOCATION",retakeDate.getMonthValue(),retakeDate.getDayOfMonth(),15,30);// Controllability
 
       meth = testSubject.getDeclaredMethod("printQuizScheduleForm", quizretakes.quizzes.class, quizretakes.retakes.class, quizretakes.courseBean.class);
       meth.setAccessible(true);
       meth.invoke(q, new quizzes(), retakeList, course);
        
-      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION");
-      testMatch = testPattern.matcher(testingOut.toString());
+      testPattern = Pattern.compile("RETAKE:\\s"+ retakeDate.getDayOfWeek() + ",\\s" + retakeDate.getMonth() + "\\s" + retakeDate.getDayOfMonth() +",\\sat\\s15:30\\sin\\sTESTLOCATION"); // Observability
+      testMatch = testPattern.matcher(testingOut.toString()); // Observability
       if(debug) {System.err.println("\nTEST_RETAKE_BEFORE_SKIP Output:") ; System.err.println("\n" + testingOut.toString()) ; System.err.println(""); }
-      assertTrue(testMatch.find()); 
+      assertTrue(testMatch.find()); // Observability
     }
 
 }

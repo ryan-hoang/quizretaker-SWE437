@@ -2,8 +2,7 @@ package quizretakes;
 import static org.junit.Assert.*;
 import org.junit.*;
 import java.lang.reflect.*;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.time.*;
@@ -32,6 +31,8 @@ public class retakeTest
     private retakeBean retake;
 
     private final ByteArrayOutputStream testingOut = new ByteArrayOutputStream();
+    private final InputStream systemIn = System.in;
+    private ByteArrayInputStream testIn;
     private final PrintStream normalOut = System.out;
 
 
@@ -72,14 +73,27 @@ public class retakeTest
       retakeList = (retakes) meth.invoke(q,"swe437");
 
     }
+    private void provideInput(String data)
+    {
+        testIn = new ByteArrayInputStream(data.getBytes());
+        System.setIn(testIn);
+    }
 
     @After
     public void cleanup()
     {
         System.setOut(new PrintStream(normalOut));
+        System.setIn(System.in);
     }
 
-    @Test
+
+
+
+    /*
+    * both tests invalid as there was a change into how the value was set
+    // first test it failed since no field
+    // fixed it by adding static field of always true
+    @Test // test to see if user is a teacher
     public void isTeacherTest() throws IllegalAccessException, NoSuchFieldException
     {
         Field field;
@@ -88,6 +102,46 @@ public class retakeTest
         boolean is_teacher = (boolean) field.get(q);
         assertEquals(true,is_teacher);
     }
+    //second test
+    //fails since the field isTeacher is always true
+    // had to refactor test since it now needs to input to a method
+    @Test // test to see if user is a student
+    public void isStudentTest() throws IllegalAccessException, NoSuchFieldException
+    {
+
+        Field field;
+        field = testSubject.getDeclaredField("isTeacher");
+        field.setAccessible(true);
+        boolean is_teacher = (boolean) field.get(q);
+        assertEquals(false,is_teacher);
+    }
+    */
+    //second test V 2.0
+    //fails since the field isTeacher is always true
+    // had to refactor test since it now needs to input to a method instead of just the field
+    @Test // test to see if user is a student
+    public void isStudentTest() throws Exception
+    {
+        boolean is_teacher = true;
+        meth = testSubject.getDeclaredMethod("user_type",String.class);
+        meth.setAccessible(true);
+        is_teacher = (boolean) meth.invoke(q,"No");
+        assertEquals(false,is_teacher);
+    }
+    // third test
+    //should fail since entered value is no a valid option
+    @Test(expected = Exception.class)
+    public void teacher_or_studendtTest() throws Exception
+    {
+        boolean is_teacher = true;
+        String input_str = "hello";
+        provideInput(input_str);
+        meth = testSubject.getDeclaredMethod("teacher_or_studendt");
+        meth.setAccessible(true);
+        is_teacher = (boolean) meth.invoke(q);
+
+    }
+
 }
 
 

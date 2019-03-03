@@ -108,6 +108,7 @@ public static void main(String []argv) /* CLI */
       quizList    =  readQuizzes(courseID); /* CLI */
       retakesList = readRetakes(courseID); /* CLI */
       // Inside try-block so this won't print if files can't be read
+      isTeacher = teacher_or_studendt();
       printQuizScheduleForm(quizList, retakesList, course);
    } catch(Exception e) {
       System.out.println("Can't read the data files for course ID " + courseID + ". You can try again with a different courseID.");
@@ -247,7 +248,30 @@ private static void printQuizScheduleForm(quizzes quizList, retakes retakesList,
    System.out.println("");
 }
 
+// ===============================================================
+// asks if user is a teacher or student adding because second test failed
+private static boolean teacher_or_studendt() throws  Exception
+{
+   Scanner scan = new Scanner(System.in);
+   String response;
+   System.out.print("Are you a teacher: [enter Yes or No]");
+   response = scan.next();
+    return user_type(response);
+}
 
+
+private static boolean user_type(String response)throws Exception
+{
+    if (response.equals("Yes") || response.equals("Y")){
+        return true;
+    }
+    else if (response.equals("No") || response.equals("N")){
+        return false;
+    }
+    else{
+        throw new IllegalArgumentException("Must enter a Yes or No");
+    }
+}
 
 // ===============================================================
 // Build the file names in one place to make them easier to change

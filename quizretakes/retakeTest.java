@@ -80,7 +80,7 @@ public class retakeTest
     }
 
     @Test
-    public void isTeacherTest()
+    public void isTeacherTest() throws IllegalAccessException, NoSuchFieldException
     {
         Field field;
         field = testSubject.getDeclaredField("isTeacher");

@@ -78,6 +78,9 @@ public class quizschedule
    // Number of days a retake is offered after the quiz is given
    private static int daysAvailable = 14;
 
+   //Teacher or student
+   private static boolean isTeacher = true;
+
 // ===============================================================
 // Prints the form to schedule a retake
 public static void main(String []argv) /* CLI */
@@ -243,6 +246,8 @@ private static void printQuizScheduleForm(quizzes quizList, retakes retakesList,
    }
    System.out.println("");
 }
+
+
 
 // ===============================================================
 // Build the file names in one place to make them easier to change

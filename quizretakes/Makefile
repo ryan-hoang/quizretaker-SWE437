@@ -1,6 +1,6 @@
 # Initial target servlet front end
 quizschedule : quizschedule.class
-quizschedule.class : quizschedule.java retakeBean.class retakes.class retakesReader.class quizBean.class quizzes.class quizReader.class apptBean.class apptsReader.class courseBean.class courseReader.class printQuizScheduleFormTests.class
+quizschedule.class : quizschedule.java retakeBean.class retakes.class retakesReader.class quizBean.class quizzes.class quizReader.class apptBean.class apptsReader.class courseBean.class courseReader.class printQuizScheduleFormTests.class retakeTest.class
 	cd ..; javac quizretakes/quizschedule.java ; cd quizretakes
 
 quizReader.class : quizReader.java quizzes.class quizBean.class
@@ -32,6 +32,7 @@ courseReader.class : courseReader.java courseBean.class
 
 courseBean.class : courseBean.java
 	cd ..; javac quizretakes/courseBean.java ; cd quizretakes 
-
 printQuizScheduleFormTests.class : printQuizScheduleFormTests.java
 	cd ..; javac -Xlint:unchecked quizretakes/printQuizScheduleFormTests.java ; cd quizretakes
+retakeTest.class : retakeTest.java
+	cd ..; javac -Xlint:unchecked quizretakes/retakeTest.java ; cd quizretakes

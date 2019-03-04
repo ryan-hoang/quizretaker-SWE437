@@ -249,6 +249,123 @@ private static void printQuizScheduleForm(quizzes quizList, retakes retakesList,
 }
 
 // ===============================================================
+private static String quiz_or_retake() throws  Exception
+{
+    Scanner scan = new Scanner(System.in);
+    System.out.println("Welcome Profesor.");
+    System.out.println("Please select and option below:");
+    System.out.println("Enter 1 if you would like to add a retake session.");
+    System.out.println("Enter 2 if you would like to add a quiz session.");
+    int choice = scan.nextInt();
+    if (choice == 1) {
+        return "Retake";
+    }
+    else if (choice == 2){
+        return "Quiz";
+    }
+    else{
+        throw new IllegalArgumentException("Must enter a 1 or 2");
+    }
+
+}
+
+
+
+
+// ===============================================================
+// gets the time of the quiz or retake  from the teacher
+    private static int[] getNewTime()
+    {
+
+    /*
+        //Hard code
+        int[] returnVal = new int[] {15,30};
+        return returnVal;
+    */
+        Scanner scan = new Scanner(System.in);
+        // added both in a while loop until they get a valin input
+        int hour = -1;
+        int minute = -1;
+        while (hour >23 || hour < 0) {
+            System.out.print("Please enter the hour for the Quiz or Retake( 1 - 23 ): ");
+            hour = scan.nextInt();
+        }
+        while (minute < 0 || minute > 59) {
+            System.out.print("Please enter the minute of the new Quiz or Retake ( 0 - 59: ");
+            minute = scan.nextInt();
+        }
+        int[] returnVal = new int[]{hour,minute};
+        return returnVal;
+    }
+
+
+
+
+
+// ===============================================================
+// gets the date from the teacher
+private static int[] getNewDate()
+{
+    /*
+    //Hard code
+    int[] returnVal = new int[] {3,4};
+    return returnVal;
+    */
+    Scanner scan = new Scanner(System.in);
+    // added both in a while loop until they get a valin input
+    int day = 0;
+    int month = 0;
+    while (day >31 || day < 1) {
+        System.out.print("Please enter the day for the Quiz or Retake( 1 - 31 ): ");
+        day = scan.nextInt();
+    }
+    while (month < 1 || month > 12) {
+        System.out.print("Please enter the month of the new Quiz or Retake: ");
+        month = scan.nextInt();
+    }
+    int[] returnVal = new int[]{day,month};
+    return returnVal;
+}
+
+// ===============================================================
+// gets the location from the teacher
+private static String getRetakeLocation()
+{
+    /*
+    return "EB 5321";
+    */
+    System.out.print("Please enter the location of the retake: ");
+    Scanner scan = new Scanner(System.in);
+    String location = scan.next();
+    //added since the two test now fail with location of more than one word
+    while (scan.hasNext())
+    {
+        location += " " + scan.next();
+    }
+    return location;
+
+}
+// ===============================================================
+// grabs the latest retake id
+private static int getLastID(retakes retakeList)
+{
+    /*
+    return 10;
+     */
+    int lastID = 0;
+    // added for check
+    if (retakeList == null)
+    {
+        throw new IllegalArgumentException("retake List was null.");
+    }
+    for (retakeBean r : retakeList)
+    {
+        lastID = r.getID();
+    }
+    return lastID;
+}
+
+// ===============================================================
 // asks if user is a teacher or student adding because second test failed
 private static boolean teacher_or_studendt() throws  Exception
 {

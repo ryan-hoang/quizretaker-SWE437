@@ -359,7 +359,9 @@ private static int getLastID(retakes retakeList)
     }
     for (retakeBean r : retakeList)
     {
-        lastID = r.getID();
+        if (lastID < r.getID()) {
+            lastID = r.getID();
+        }
     }
     return lastID;
 }

@@ -336,13 +336,12 @@ private static String getRetakeLocation()
     */
     System.out.print("Please enter the location of the retake: ");
     Scanner scan = new Scanner(System.in);
-    String location = scan.next();
-    //added since the two test now fail with location of more than one word
-    while (scan.hasNext())
+    String location = scan.nextLine();
+    while (scan.hasNext() && location.equals(""))
     {
-        location += " " + scan.next();
+        location = scan.nextLine();
     }
-    return location;
+        return location;
 
 }
 // ===============================================================

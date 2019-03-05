@@ -225,6 +225,7 @@ public class retakeTest
     }
     // eleventh test
     // hammer out the hard coding in the getRetake Location method
+    // now a useless test as it test nothng new
     @Test
     public void getRetakeLocationTest2() throws Exception
     {
@@ -240,12 +241,12 @@ public class retakeTest
     @Test
     public void getRetakeLocationTest3() throws Exception
     {
-        String input_str = "\n";
+        String input_str = "\nEB 4430";
         provideInput(input_str);
-        provideInput("EB 4430");
         meth = testSubject.getDeclaredMethod("getRetakeLocation");
         meth.setAccessible(true);
         String returnStr = (String) meth.invoke(q);
+        assertEquals("EB 4430", returnStr);
     }
     // 13th test
     // adding a new feature of getNewDate

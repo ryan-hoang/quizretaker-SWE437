@@ -1,5 +1,4 @@
-<?xml version = "1.0" encoding = "UTF-8" ?>
-<quizzes>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><quizzes>
 
   <quiz>
     <id>1</id> <!-- integer > 0 -->
@@ -22,5 +21,4 @@
   </quiz>
 
 <!-- ... add remaining quizzes below -->
-
 </quizzes>

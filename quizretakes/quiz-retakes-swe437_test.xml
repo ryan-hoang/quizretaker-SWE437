@@ -110,6 +110,4 @@
     </dateGiven>
   </retake>
   
-<!-- Add more retakes below ... the id should be unique and increment with date -->
-
-<retake><id>11</id><location>ecb 305</location><dateGiven><month>3</month><day>9</day><hour>10</hour><minute>25</minute></dateGiven></retake></retakes>
+<retake><id>11</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>12</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>13</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>14</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>15</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>16</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>17</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>18</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake><retake><id>19</id><location>EB 1234</location><dateGiven><month>3</month><day>7</day><hour>15</hour><minute>30</minute></dateGiven></retake></retakes>

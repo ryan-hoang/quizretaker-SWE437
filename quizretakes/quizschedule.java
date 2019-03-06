@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.io.PrintStream;
 import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.time.*;
 import java.lang.Long;
 import java.lang.String;
@@ -26,6 +27,16 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.Properties; /* CLI */
 
@@ -79,7 +90,7 @@ public class quizschedule
    private static int daysAvailable = 14;
 
    //Teacher or student
-   private static boolean isTeacher = true;
+   private static boolean isTeacher = false;
 
 // ===============================================================
 // Prints the form to schedule a retake
@@ -109,6 +120,19 @@ public static void main(String []argv) /* CLI */
       retakesList = readRetakes(courseID); /* CLI */
       // Inside try-block so this won't print if files can't be read
       isTeacher = teacher_or_studendt();
+      if (isTeacher == true)
+      {
+        String choice = quiz_or_retake(sc);
+        if (choice.equals("Retake")){
+            newRetake(retakesList);
+            System.out.println("Thank you professor for adding another retake session");
+        }
+        else if (choice.equals("Quiz")){
+            newQuiz(quizList);
+            System.out.println("thank you professor for adding another quiz");
+        }
+        return;
+      }
       printQuizScheduleForm(quizList, retakesList, course);
    } catch(Exception e) {
       System.out.println("Can't read the data files for course ID " + courseID + ". You can try again with a different courseID.");
@@ -249,9 +273,144 @@ private static void printQuizScheduleForm(quizzes quizList, retakes retakesList,
 }
 
 // ===============================================================
-private static String quiz_or_retake() throws  Exception
+// adds a new quiz
+// originally put into string and returned the xml form of the new quiz
+//refactored to now update the xml and no need to return anything anymore
+private static void newQuiz(quizzes quizList) throws Exception
 {
     Scanner scan = new Scanner(System.in);
+    int newQuizID = getLastQuizID(quizList) + 1;
+    //String newQuizXML = "<quiz><id>" + newQuizID + "</id>";
+    int[] dayMonth = getNewDate(scan);
+    //newQuizXML += "<dateGiven><month>" + dayMonth[1] + "</month><day>" + dayMonth[0] + "</day>";
+    //newQuizXML += "<hour>" + dayMonth[2] + "</hour><minute>"+ dayMonth[3] + "</minute></dateGiven></quiz>";
+
+    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+            .newInstance();
+    DocumentBuilder documentBuilder = documentBuilderFactory
+            .newDocumentBuilder();
+    Document document = documentBuilder.parse(quizzesFileName);
+
+    Element root = document.getDocumentElement();
+    Element rootElement = document.getDocumentElement();
+    Collection<quizBean> quiz = new ArrayList<quizBean>();
+    quiz.add(new quizBean(newQuizID,dayMonth[1],dayMonth[0],dayMonth[2],dayMonth[3]));
+
+    for (quizBean i : quiz){
+        Element quiz1 = document.createElement("quiz");
+        rootElement.appendChild(quiz1);
+
+        Element id = document.createElement("id");
+        id.appendChild(document.createTextNode(Integer.toString(newQuizID)));
+        quiz1.appendChild(id);
+
+        Element dateGiven = document.createElement("dateGiven");
+        quiz1.appendChild(dateGiven);
+
+        Element month = document.createElement("month");
+        month.appendChild(document.createTextNode(Integer.toString(dayMonth[1])));
+        dateGiven.appendChild(month);
+
+        Element day = document.createElement("day");
+        day.appendChild(document.createTextNode(Integer.toString(dayMonth[0])));
+        dateGiven.appendChild(day);
+
+        Element hour = document.createElement("hour");
+        hour.appendChild(document.createTextNode(Integer.toString(dayMonth[2])));
+        dateGiven.appendChild(hour);
+
+        Element minute = document.createElement("minute");
+        minute.appendChild(document.createTextNode(Integer.toString(dayMonth[3])));
+        dateGiven.appendChild(minute);
+
+        root.appendChild(quiz1);
+    }
+
+    DOMSource source = new DOMSource(document);
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    StreamResult result = new StreamResult(quizzesFileName);
+    transformer.transform(source, result);
+
+}
+
+
+// ===============================================================
+// adds a new retake
+// originally just returned the a string form of the xml back to the caller
+// now updates the xml and does not need to return anything
+// leading to a refactor in the tests as some are now invalid
+private static void newRetake(retakes retakeList) throws Exception
+{
+    Scanner scan = new Scanner(System.in);
+    int newQuizID = getLastRetakeID(retakeList) + 1;
+    //String newRetakeXML = "<retake><id>" + newQuizID + "</id>";
+    String location = getRetakeLocation(scan);
+    //newRetakeXML += "<location>" + location + "</location>";
+    int[] dayMonth = getNewDate(scan);
+    //newRetakeXML += "<dateGiven><month>" + dayMonth[1] + "</month><day>" + dayMonth[0] + "</day>";
+    //newRetakeXML += "<hour>" + dayMonth[2] + "</hour><minute>"+ dayMonth[3] + "</minute></dateGiven></retake>";
+    //quizBean newQuizBean = new quizBean(newQuizID,dayMonth[1],dayMonth[0],dayMonth[2],dayMonth[3]);
+    //quizList.addQuiz(newQuizBean);
+
+    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+            .newInstance();
+    DocumentBuilder documentBuilder = documentBuilderFactory
+            .newDocumentBuilder();
+    Document document = documentBuilder.parse(retakesFileName);
+
+    Element root = document.getDocumentElement();
+    Element rootElement = document.getDocumentElement();
+    Collection<retakeBean> retake = new ArrayList<retakeBean>();
+    retake.add(new retakeBean(newQuizID,location,dayMonth[1],dayMonth[0],dayMonth[2],dayMonth[3]));
+
+    for (retakeBean i : retake){
+        Element retake1 = document.createElement("retake");
+        rootElement.appendChild(retake1);
+
+        Element id = document.createElement("id");
+        id.appendChild(document.createTextNode(Integer.toString(newQuizID)));
+        retake1.appendChild(id);
+
+        Element retakeloc = document.createElement("location");
+        retakeloc.appendChild(document.createTextNode(location));
+        retake1.appendChild(retakeloc);
+
+
+        Element dateGiven = document.createElement("dateGiven");
+        retake1.appendChild(dateGiven);
+
+        Element month = document.createElement("month");
+        month.appendChild(document.createTextNode(Integer.toString(dayMonth[1])));
+        dateGiven.appendChild(month);
+
+        Element day = document.createElement("day");
+        day.appendChild(document.createTextNode(Integer.toString(dayMonth[0])));
+        dateGiven.appendChild(day);
+
+        Element hour = document.createElement("hour");
+        hour.appendChild(document.createTextNode(Integer.toString(dayMonth[2])));
+        dateGiven.appendChild(hour);
+
+        Element minute = document.createElement("minute");
+        minute.appendChild(document.createTextNode(Integer.toString(dayMonth[3])));
+        dateGiven.appendChild(minute);
+
+        root.appendChild(retake1);
+    }
+
+    DOMSource source = new DOMSource(document);
+    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    Transformer transformer = transformerFactory.newTransformer();
+    StreamResult result = new StreamResult(retakesFileName);
+    transformer.transform(source, result);
+
+
+}
+
+// ===============================================================
+private static String quiz_or_retake(Scanner scan) throws  Exception
+{
     System.out.println("Welcome Profesor.");
     System.out.println("Please select and option below:");
     System.out.println("Enter 1 if you would like to add a retake session.");
@@ -271,9 +430,10 @@ private static String quiz_or_retake() throws  Exception
 
 
 
-
+/*
 // ===============================================================
 // gets the time of the quiz or retake  from the teacher
+// refactored the code to have the same function getting both the date and time to localize the process
     private static int[] getNewTime()
     {
 
@@ -281,7 +441,7 @@ private static String quiz_or_retake() throws  Exception
         //Hard code
         int[] returnVal = new int[] {15,30};
         return returnVal;
-    */
+
         Scanner scan = new Scanner(System.in);
         // added both in a while loop until they get a valin input
         int hour = -1;
@@ -298,20 +458,19 @@ private static String quiz_or_retake() throws  Exception
         return returnVal;
     }
 
-
-
+    this code is being merged into the get new date as it is to hard to test test them together since they take in user input
+*/
 
 
 // ===============================================================
 // gets the date from the teacher
-private static int[] getNewDate()
+private static int[] getNewDate(Scanner scan)
 {
     /*
     //Hard code
     int[] returnVal = new int[] {3,4};
     return returnVal;
     */
-    Scanner scan = new Scanner(System.in);
     // added both in a while loop until they get a valin input
     int day = 0;
     int month = 0;
@@ -323,44 +482,75 @@ private static int[] getNewDate()
         System.out.print("Please enter the month of the new Quiz or Retake: ");
         month = scan.nextInt();
     }
-    int[] returnVal = new int[]{day,month};
+    int hour = -1;
+    int minute = -1;
+    while (hour >23 || hour < 0) {
+        System.out.print("Please enter the hour for the Quiz or Retake( 1 - 23 ): ");
+        hour = scan.nextInt();
+    }
+    while (minute < 0 || minute > 59) {
+        System.out.print("Please enter the minute of the new Quiz or Retake ( 0 - 59: ");
+        minute = scan.nextInt();
+    }
+    int[] returnVal = new int[]{day,month,hour,minute};
     return returnVal;
 }
-
 // ===============================================================
 // gets the location from the teacher
-private static String getRetakeLocation()
+private static String getRetakeLocation(Scanner scan)
 {
     /*
     return "EB 5321";
     */
-    System.out.print("Please enter the location of the retake: ");
-    Scanner scan = new Scanner(System.in);
+    System.out.println("Please enter the location of the retake: ");
     String location = scan.nextLine();
-    while (scan.hasNext() && location.equals(""))
+    System.out.printf("Scanner value = %s", location);
+    while (location.equals("") || location.equals("\n"))
     {
         location = scan.nextLine();
     }
-        return location;
+    System.out.println("HELLO");
+    return location;
 
 }
 // ===============================================================
+// grabs the latest quiz id
+    private static int getLastRetakeID(retakes retakeList)
+    {
+    /*
+    return 10;
+     */
+        int lastID = 0;
+        // added for check
+        if (retakeList == null)
+        {
+            throw new IllegalArgumentException("retake List was null.");
+        }
+        for (retakeBean r : retakeList)
+        {
+            if (lastID < r.getID()) {
+                lastID = r.getID();
+            }
+        }
+        return lastID;
+    }
+// ===============================================================
 // grabs the latest retake id
-private static int getLastID(retakes retakeList)
+private static int getLastQuizID(quizzes quizList)
 {
     /*
     return 10;
      */
     int lastID = 0;
     // added for check
-    if (retakeList == null)
+    if (quizList == null)
     {
         throw new IllegalArgumentException("retake List was null.");
     }
-    for (retakeBean r : retakeList)
+    for (quizBean q : quizList)
     {
-        if (lastID < r.getID()) {
-            lastID = r.getID();
+        if (lastID < q.getID()) {
+            lastID = q.getID();
         }
     }
     return lastID;
@@ -377,6 +567,18 @@ private static boolean teacher_or_studendt() throws  Exception
     return user_type(response);
 }
 
+//part of my spike has not function in the overall operation of the code
+private static String double_scan(){
+    Scanner scan = new Scanner(System.in);
+    String response;
+    response = scan.next();
+    response += " " + spike(scan);
+    return response;
+}
+private static String spike(Scanner scan){
+    String response = scan.next();
+    return response;
+}
 
 private static boolean user_type(String response)throws Exception
 {

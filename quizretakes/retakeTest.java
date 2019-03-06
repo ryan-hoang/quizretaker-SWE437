@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.time.*;
-
+import java.util.Scanner;
 //Ryan Hoang, Justin Plassmeyer, Ryan Robinson
 //Dependencies JUNIT-4.12 | Hamcrest-core-2.1
 
@@ -160,11 +160,12 @@ public class retakeTest
     @Test
     public void quiz_or_retakeTest() throws Exception
     {
-        meth = testSubject.getDeclaredMethod("quiz_or_retake");
+        meth = testSubject.getDeclaredMethod("quiz_or_retake",Scanner.class);
         String input_str = "1";
         provideInput(input_str);
         meth.setAccessible(true);
-        String returnValue = (String) meth.invoke(q);
+        Scanner scan = new Scanner(System.in);
+        String returnValue = (String) meth.invoke(q,scan);
         assertEquals("Retake",returnValue);
     }
     // sixth test
@@ -172,11 +173,12 @@ public class retakeTest
     @Test
     public void quiz_or_retakeTest2() throws Exception
     {
-        meth = testSubject.getDeclaredMethod("quiz_or_retake");
+        meth = testSubject.getDeclaredMethod("quiz_or_retake",Scanner.class);
         String input_str = "2";
         provideInput(input_str);
         meth.setAccessible(true);
-        String returnValue = (String) meth.invoke(q);
+        Scanner scan = new Scanner(System.in);
+        String returnValue = (String) meth.invoke(q,scan);
         assertEquals("Quiz",returnValue);
     }
     //seventh test
@@ -184,11 +186,12 @@ public class retakeTest
     @Test(expected = Exception.class)
     public void quiz_or_retakeTest3() throws Exception
     {
-        meth = testSubject.getDeclaredMethod("quiz_or_retake");
+        meth = testSubject.getDeclaredMethod("quiz_or_retake",Scanner.class);
         String input_str = "5";
         provideInput(input_str);
         meth.setAccessible(true);
-        String returnValue = (String) meth.invoke(q);
+        Scanner scan = new Scanner(System.in);
+        String returnValue = (String) meth.invoke(q,scan);
 
     }
     // eigth test
@@ -196,7 +199,7 @@ public class retakeTest
     @Test
     public void getLastIDTest() throws Exception
     {
-        meth = testSubject.getDeclaredMethod("getLastID", quizretakes.retakes.class);
+        meth = testSubject.getDeclaredMethod("getLastRetakeID", quizretakes.retakes.class);
         meth.setAccessible(true);
         int lastID = (int) meth.invoke(q, retakeList);
         assertEquals(10,lastID);
@@ -218,9 +221,10 @@ public class retakeTest
     {
         String input_str = "EB 5321";
         provideInput(input_str);
-        meth = testSubject.getDeclaredMethod("getRetakeLocation");
+        Scanner scan = new Scanner(System.in);
+        meth = testSubject.getDeclaredMethod("getRetakeLocation",Scanner.class);
         meth.setAccessible(true);
-        String returnStr = (String) meth.invoke(q);
+        String returnStr = (String) meth.invoke(q,scan);
         assertEquals("EB 5321", returnStr);
     }
     // eleventh test
@@ -231,9 +235,10 @@ public class retakeTest
     {
         String input_str = "EB 4430";
         provideInput(input_str);
-        meth = testSubject.getDeclaredMethod("getRetakeLocation");
+        Scanner scan = new Scanner(System.in);
+        meth = testSubject.getDeclaredMethod("getRetakeLocation",Scanner.class);
         meth.setAccessible(true);
-        String returnStr = (String) meth.invoke(q);
+        String returnStr = (String) meth.invoke(q,scan);
         assertEquals("EB 4430", returnStr);
     }
     // 12th test
@@ -243,9 +248,10 @@ public class retakeTest
     {
         String input_str = "\nEB 4430";
         provideInput(input_str);
-        meth = testSubject.getDeclaredMethod("getRetakeLocation");
+        Scanner scan = new Scanner(System.in);
+        meth = testSubject.getDeclaredMethod("getRetakeLocation",Scanner.class);
         meth.setAccessible(true);
-        String returnStr = (String) meth.invoke(q);
+        String returnStr = (String) meth.invoke(q,scan);
         assertEquals("EB 4430", returnStr);
     }
     // 13th test
@@ -253,12 +259,13 @@ public class retakeTest
     @Test
     public void getDateRetakeTest1() throws Exception
     {
-        meth = testSubject.getDeclaredMethod("getNewDate");
+        meth = testSubject.getDeclaredMethod("getNewDate",Scanner.class);
         meth.setAccessible(true);
         // added as the method changed
-        provideInput("4 3");
-        int[] date_test = (int[]) meth.invoke(q);
-        int[] expected = new int[] {4,3};
+        provideInput("4 3 15 30");
+        Scanner scan = new Scanner(System.in);
+        int[] date_test = (int[]) meth.invoke(q,scan);
+        int[] expected = new int[] {4,3,15,30};
         assertArrayEquals(expected, date_test);
     }
     // 14th test
@@ -268,12 +275,13 @@ public class retakeTest
     public void getDateRetakeTest2() throws Exception
     {
         // this was added in since the code now has Command line input
-        String date = "7 3";
+        String date = "7 3 11 20";
         provideInput(date);
-        meth = testSubject.getDeclaredMethod("getNewDate");
+        meth = testSubject.getDeclaredMethod("getNewDate",Scanner.class);
         meth.setAccessible(true);
-        int[] date_test = (int[]) meth.invoke(q);
-        int[] expected = new int[] {7,3};
+        Scanner scan = new Scanner(System.in);
+        int[] date_test = (int[]) meth.invoke(q,scan);
+        int[] expected = new int[] {7,3,11,20};
         assertArrayEquals(expected, date_test);
     }
     // 15th test
@@ -281,14 +289,19 @@ public class retakeTest
     @Test
     public void getDateRetakeTest3() throws Exception
     {
-        String input_str = "123 0 123 -123 4 123 -543 543 3";
+        String input_str = "123 0 123 -123 4 123 -543 543 3 9 10";
         provideInput(input_str);
-        meth = testSubject.getDeclaredMethod("getNewDate");
+        meth = testSubject.getDeclaredMethod("getNewDate",Scanner.class);
         meth.setAccessible(true);
-        int[] date_test = (int[]) meth.invoke(q);
-        int[] expected = new int[] {4,3};
+        Scanner scan = new Scanner(System.in);
+        int[] date_test = (int[]) meth.invoke(q,scan);
+        int[] expected = new int[] {4,3,9,10};
         assertArrayEquals(expected,date_test);
     }
+    /*
+
+            Being integrated into the tests above as the method that pulls all of them together would not be able to be automated as it stood
+
     // 16th test
     // adding new method getNewTime
     @Test
@@ -302,6 +315,9 @@ public class retakeTest
         int[] expected = new int[] {15,30};
         assertArrayEquals(expected, date_test);
     }
+
+
+
     // 17th test
     // adding new method getNewTime
     @Test
@@ -328,11 +344,176 @@ public class retakeTest
         int[] expected = new int[] {10,30};
         assertArrayEquals(expected,date_test);
     }
+    */
+    // 19th test
+    // testing getting the last quiz id
+    @Test
+    public void getLastQuizIDTest() throws Exception
+    {
+        meth = testSubject.getDeclaredMethod("getLastQuizID", quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        int lastID = (int) meth.invoke(q, quizList);
+        assertEquals(2,lastID);
+    }
+    /*
+     22 test means that these are no longer valid test
+    // 20th test
+    //first test of the full retake system
+    @Test
+    public void newQuizTest1() throws Exception
+    {
+        String expected = "<id>3</id>";
+        meth = testSubject.getDeclaredMethod("newQuiz",quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        String returnVal = (String) meth.invoke(q, quizList);
+        assertEquals(expected,returnVal);
+    }
+    // 21th
+    // testing if quizlist is null sad path
+    // 20th test
+    //first test of the full retake system
+    @Test(expected = Exception.class)
+    public void newQuizTest2() throws Exception
+    {
+        String expected = "<id>3</id>";
+        meth = testSubject.getDeclaredMethod("newQuiz",quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        quizList = null;
+        String returnVal = (String) meth.invoke(q, quizList);
+    }
+    // 22th test
+    // testing the next level of the xml
+    @Test
+    public void newQuizTest3() throws Exception
+    {
+        String expected = "<quiz><id>3</id><dateGiven><month>3</month><day>6</day></dateGiven></quiz>";
+        meth = testSubject.getDeclaredMethod("newQuiz",quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        provideInput("6 3");
+        String returnVal = (String) meth.invoke(q, quizList);
+        assertEquals(expected,returnVal);
+    }
+    // 23th test
+    //
+    // testing the next level of the xml
+    // test refactored into the next one as this one checks things that are nolonger valid
+    @Test
+    public void newQuizTest3() throws Exception
+    {
+        String expected = "<quiz><id>3</id><dateGiven><month>3</month><day>6</day><hour>15</hour><minute>30</minute></dateGiven></quiz>";
+        meth = testSubject.getDeclaredMethod("newQuiz",quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        String data = "6 3 15 30";
+        System.setIn(new ByteArrayInputStream(data.getBytes()));
+        String returnVal = (String) meth.invoke(q, quizList);
+        assertEquals(expected,returnVal);
+    }
+    */
+    // 24th test
+    // tests the final xml write of a new quiz
+    @Test
+    public void testingXMLwrite1() throws Exception
+    {
+        Field field;
+        //set quizzesFileName
+        //grabs an unmodified version of the quizzes
+        meth = testSubject.getDeclaredMethod("readQuizzes", String.class);
+        meth.setAccessible(true);
+        field = testSubject.getDeclaredField("quizzesFileName");
+        field.setAccessible(true);
+        field.set(q, "quizretakes/quiz-orig-swe437_test.xml");
+        quizList = (quizzes) meth.invoke(q,"swe437");
+
+        meth = testSubject.getDeclaredMethod("getLastQuizID", quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        int newID = (int) meth.invoke(q,quizList) + 1;
+
+        meth = testSubject.getDeclaredMethod("newQuiz",quizretakes.quizzes.class);
+        meth.setAccessible(true);
+        String data = "7 3 15 30";
+        System.setIn(new ByteArrayInputStream(data.getBytes()));
+        String returnVal = (String) meth.invoke(q, quizList);
+
+        meth = testSubject.getDeclaredMethod("readQuizzes", String.class);
+        meth.setAccessible(true);
+        quizzes result = (quizzes) meth.invoke(q,"swe437");
+
+        quizBean newQuizBean = new quizBean(newID,3,7,15,30);
+        quizList.addQuiz(newQuizBean);
+        assertEquals(quizList.toString(),result.toString());
+
+    }
+
+    // 25th test
+    // tests the final xml write of a new retake
+    //will fail on compile
+    // will have to add the code to make it run
+    // added the code to make it compile
+    // added the code to make it green bar
+    // refactored the code
+    // learned from last test
+    @Test
+    public void testingXMLwriteRetakes() throws Exception
+    {
+        Field field;
+        //set retakesFileName
+        //used to grab the unmodified already good retake list
+        meth = testSubject.getDeclaredMethod("readRetakes", String.class);
+        meth.setAccessible(true);
+        field = testSubject.getDeclaredField("retakesFileName");
+        field.setAccessible(true);
+        field.set(q, "quizretakes/quiz-retakes-swe437_test.xml");
+        retakeList = (retakes) meth.invoke(q,"swe437");
+
+        meth = testSubject.getDeclaredMethod("getLastRetakeID", quizretakes.retakes.class);
+        meth.setAccessible(true);
+        int newID = (int) meth.invoke(q,retakeList) + 1;
+
+        meth = testSubject.getDeclaredMethod("newRetake",quizretakes.retakes.class);
+        meth.setAccessible(true);
+        String data = "EB 1234\n7 3 15 30";
+        System.setIn(new ByteArrayInputStream(data.getBytes()));
+        //String returnVal = (String)
+        meth.invoke(q, retakeList);
+
+        meth = testSubject.getDeclaredMethod("readRetakes", String.class);
+        meth.setAccessible(true);
+        retakes result = (retakes) meth.invoke(q,"swe437");
+
+        retakeBean newRetakeBean = new retakeBean(newID,"EB 1234" ,3,7,15,30);
+        retakeList.addRetake(newRetakeBean);
+        assertEquals(retakeList.toString(),result.toString());
+
+    }
 
 
 
 
 
+
+
+
+
+
+
+    // this test has nothing to do with final project just a proof of concept
+    // my spike
+    @Test
+    public void testingSequenceStream() throws Exception
+    {
+        meth = testSubject.getDeclaredMethod("double_scan");
+        meth.setAccessible(true);
+        String data1 = "hello world";
+        String data2 = "world";
+        ByteArrayInputStream first = new ByteArrayInputStream(data1.getBytes());
+        ByteArrayInputStream second = new ByteArrayInputStream(data2.getBytes());
+        System.setIn(first);
+        String expected = "hello world";
+        String result = (String) meth.invoke(q);
+        assertEquals(expected,result);
+
+
+    }
 
 
 }

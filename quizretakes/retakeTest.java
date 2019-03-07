@@ -115,10 +115,12 @@ public class retakeTest
         boolean is_teacher = (boolean) field.get(q);
         assertEquals(false,is_teacher);
     }
+    //value no longer needed a field check as it was set via a method call
     */
     //second test V 2.0
     //fails since the field isTeacher is always true
     // had to refactor test since it now needs to input to a method instead of just the field
+    // had to refactor code to accept different veriations of no and yes
     @Test // test to see if user is a student
     public void isStudentTest() throws Exception
     {
@@ -130,6 +132,8 @@ public class retakeTest
     }
     // third test
     //should fail since entered value is no a valid option
+    // code refactored to give a more usefull error message
+    // needed since it was not clear as to why it was failing
     @Test(expected = Exception.class)
     public void teacher_or_studendtFailTest() throws Exception
     {
@@ -142,7 +146,9 @@ public class retakeTest
 
     }
     // fourth test
+    // should fail at first since this is the first test for a method
     // should pass since it is being send a valid input string
+    // happy path testing
     @Test
     public void teacher_or_studendtPassTest() throws Exception
     {
@@ -156,6 +162,9 @@ public class retakeTest
 
     }
     // fifth test
+    // should fail since it there is no method yet
+    // wrote the code to bring it first to compile then into the green
+    // refactored it to give a more helpfull error message
     // testing to see if teacher can choose to add retake session
     @Test
     public void quiz_or_retakeTest() throws Exception
@@ -196,9 +205,18 @@ public class retakeTest
     }
     // eigth test
     // a helper method to get the id of the latest test
+    //should first fail
     @Test
     public void getLastIDTest() throws Exception
     {
+        Field field;
+        meth = testSubject.getDeclaredMethod("readRetakes", String.class);
+        meth.setAccessible(true);
+        field = testSubject.getDeclaredField("retakesFileName");
+        field.setAccessible(true);
+        field.set(q, "quizretakes/quiz-retakes-swe437_test2.xml");
+        retakeList = (retakes) meth.invoke(q,"swe437");
+
         meth = testSubject.getDeclaredMethod("getLastRetakeID", quizretakes.retakes.class);
         meth.setAccessible(true);
         int lastID = (int) meth.invoke(q, retakeList);
@@ -206,6 +224,7 @@ public class retakeTest
     }
     //ninth test
     // tests to see if null list is given, nonhappy path
+    // this test was the one that lead to the error message refactoring
     @Test(expected = Exception.class)
     public void getLastID_NULLTest() throws Exception
     {
@@ -216,6 +235,8 @@ public class retakeTest
     }
     // tenth test
     // tests getting the retake location
+    // no compile
+    // hardcoding
     @Test
     public void getRetakeLocactionTest1() throws Exception
     {
@@ -243,6 +264,8 @@ public class retakeTest
     }
     // 12th test
     // new line testing
+    // tests to see what happens when user hits a blank enter
+    // refactored code to allow it to handle this situation
     @Test
     public void getRetakeLocationTest3() throws Exception
     {
@@ -256,6 +279,8 @@ public class retakeTest
     }
     // 13th test
     // adding a new feature of getNewDate
+    // doesn't compile
+    // leads to hard coading of a new method
     @Test
     public void getDateRetakeTest1() throws Exception
     {
@@ -271,6 +296,8 @@ public class retakeTest
     // 14th test
     // hammering out the hard coding in getNewDate;
     // after refactoring the code this test is now useless as it is the same as the prior
+    // test was later refactored as the time and date methods were combined into one for ease of access
+
     @Test
     public void getDateRetakeTest2() throws Exception
     {
@@ -286,6 +313,8 @@ public class retakeTest
     }
     // 15th test
     //not a very happy path test person enters numbers that are not valid
+    // as this should be valid lead to a rework of the code to allow for the user to retry for invalid numbers entered
+    // test was later refactored as the time and date methods were combined into one for ease of access
     @Test
     public void getDateRetakeTest3() throws Exception
     {
@@ -347,18 +376,36 @@ public class retakeTest
     */
     // 19th test
     // testing getting the last quiz id
+    // same code as other test just different input
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS TEST WILL FAIL IF YOU ADD A TEST BY RUNNING THE ACTUAL CODE TO COMPLETION
+    //          AS THE EXPECTED WOULD HAVE TO CHANGE AS WELL POSSIBLE !!!!!!!!!!!!!!!!!!!
+    // nvm false alarm test was refactored to look at a different instance of the quizzes
     @Test
     public void getLastQuizIDTest() throws Exception
     {
+        Field field;
+        meth = testSubject.getDeclaredMethod("readQuizzes", String.class);
+        meth.setAccessible(true);
+        field = testSubject.getDeclaredField("quizzesFileName");
+        field.setAccessible(true);
+        field.set(q, "quizretakes/quiz-orig-swe437_test2.xml");
+        quizList = (quizzes) meth.invoke(q,"swe437");
+
+
         meth = testSubject.getDeclaredMethod("getLastQuizID", quizretakes.quizzes.class);
         meth.setAccessible(true);
         int lastID = (int) meth.invoke(q, quizList);
         assertEquals(2,lastID);
     }
     /*
+
+     these tests are no longer needed as the way that the xml was added to the file was changed and the string return
+        value was refactored out of both the test, and the code
+
      22 test means that these are no longer valid test
     // 20th test
     //first test of the full retake system
+    // this test was no longer needed as this was a partial working of the final xml appender
     @Test
     public void newQuizTest1() throws Exception
     {
@@ -411,6 +458,8 @@ public class retakeTest
     */
     // 24th test
     // tests the final xml write of a new quiz
+    // gives the input to write to a text xml
+    // was refactored both in code and test a few times to its current state
     @Test
     public void testingXMLwrite1() throws Exception
     {

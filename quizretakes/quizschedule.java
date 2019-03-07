@@ -504,12 +504,10 @@ private static String getRetakeLocation(Scanner scan)
     */
     System.out.println("Please enter the location of the retake: ");
     String location = scan.nextLine();
-    System.out.printf("Scanner value = %s", location);
     while (location.equals("") || location.equals("\n"))
     {
         location = scan.nextLine();
     }
-    System.out.println("HELLO");
     return location;
 
 }
@@ -582,10 +580,10 @@ private static String spike(Scanner scan){
 
 private static boolean user_type(String response)throws Exception
 {
-    if (response.equals("Yes") || response.equals("Y")){
+    if (response.equals("Yes") || response.equals("Y") ||response.equals("yes") || response.equals("y") ){
         return true;
     }
-    else if (response.equals("No") || response.equals("N")){
+    else if (response.equals("No") || response.equals("N") || response.equals("no") || response.equals("n")){
         return false;
     }
     else{
